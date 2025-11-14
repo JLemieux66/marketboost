@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Market Boost Intake</title>
+
+<style>
+  :root {
+    --bg-gradient: linear-gradient(135deg, #0f172a, #1e293b 40%, #4c1d95);
+    --card-bg: #0b1120;
+    --border: #1f2937;
+    --text: #e5e7eb;
+    --text-muted: #9ca3af;
+    --primary: #6366f1;
+    --primary-soft: rgba(99, 102, 241, 0.12);
+    --primary-hover: #4f46e5;
+    --accent: #22d3ee;
+    --radius: 12px;
+    --shadow: 0 18px 40px rgba(0,0,0,0.55);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg-gradient);
+    padding: 30px;
+    color: var(--text);
+  }
+
+  .shell {
+    max-width: 1280px;
+    margin: 0 auto;
+    background: radial-gradient(circle at top left, rgba(148,163,184,0.25), transparent 55%), #020617;
+    border-radius: 20px;
+    border: 1px solid rgba(148,163,184,0.25);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    display: flex;
+    min-height: 640px;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 260px;
+    padding: 24px 20px;
+    border-right: 1px solid rgba(31,41,55,0.9);
+    background: radial-gradient(circle at top, rgba(56,189,248,0.15), transparent 55%), #020617;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .logo-block {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-mark {
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    background: radial-gradient(circle at 30% 30%, #e5e7eb, #6366f1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #020617;
+    font-weight: 800;
+    font-size: 16px;
+  }
+
+  .logo-text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .logo-title {
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .logo-subtitle {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .sidebar-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text-muted);
+    border: 1px solid transparent;
+    transition: 0.15s ease;
+  }
+
+  .nav-item-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    background: rgba(15,23,42,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+  }
+
+  .nav-item span.label {
+    flex: 1;
+  }
+
+  .nav-item span.step-number {
+    font-size: 11px;
+    opacity: 0.8;
+  }
+
+  .nav-item:hover {
+    background: rgba(15,23,42,0.9);
+    border-color: rgba(148,163,184,0.35);
+  }
+
+  .nav-item.active {
+    color: #e5e7eb;
+    border-color: rgba(99,102,241,0.8);
+    background: radial-gradient(circle at left, rgba(99,102,241,0.4), rgba(15,23,42,0.95));
+  }
+
+  .nav-item.active .nav-item-icon {
+    background: radial-gradient(circle at 30% 20%, var(--accent), var(--primary));
+  }
+
+  .sidebar-footer {
+    margin-top: auto;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .sidebar-footer strong {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  /* Main area */
+  .main {
+    flex: 1;
+    padding: 26px 28px 24px 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .main-title-block {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .main-title {
+    font-size: 22px;
+    font-weight: 700;
+  }
+
+  .main-subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .wizard-status {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* Progress bar (beads/circles) */
+  .progress {
+    position: relative;
+    padding: 10px 4px 6px 4px;
+  }
+
+  .progress-line {
+    position: absolute;
+    top: 22px;
+    left: 20px;
+    right: 20px;
+    height: 2px;
+    background: rgba(31,41,55,0.9);
+    z-index: 1;
+  }
+
+  .progress-steps {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    z-index: 2;
+  }
+
+  .progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    text-align: center;
+  }
+
+  .progress-circle {
+    width: 26px;
+    height: 26px;
+    border-radius: 999px;
+    border: 2px solid rgba(55,65,81,0.9);
+    background: #020617;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: var(--text-muted);
+    transition: 0.15s;
+  }
+
+  .progress-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .progress-step.active .progress-circle {
+    border-color: var(--accent);
+    background: radial-gradient(circle at 30% 20%, var(--accent), var(--primary));
+    color: #020617;
+    font-weight: 700;
+  }
+
+  .progress-step.completed .progress-circle {
+    border-color: var(--primary);
+    background: radial-gradient(circle at 30% 20%, var(--primary), #22c55e);
+    color: #020617;
+    font-weight: 700;
+  }
+
+  .progress-step.active .progress-label {
+    color: #e5e7eb;
+  }
+
+  .progress-step.completed .progress-label {
+    color: var(--accent);
+  }
+
+  /* Card + content */
+  .card {
+    background: radial-gradient(circle at top right, rgba(30,64,175,0.4), rgba(15,23,42,0.96));
+    border-radius: var(--radius);
+    padding: 22px 20px 20px 20px;
+    border: 1px solid rgba(148,163,184,0.35);
+    box-shadow: 0 12px 30px rgba(15,23,42,0.85);
+  }
+
+  .card h2 {
+    margin-top: 0;
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  h3 {
+    margin-top: 10px;
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .step {
+    display: none;
+  }
+
+  .step.active {
+    display: block;
+  }
+
+  .grid {
+    display: grid;
+    grid-gap: 10px;
+    margin-top: 16px;
+  }
+
+  .grid-industry { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+  .grid-5       { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+  .grid-4       { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+  .grid-3       { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+  .grid-states  { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+
+  .tile {
+    display: flex;
+    align-items: center;
+    padding: 10px 10px;
+    background: rgba(15,23,42,0.95);
+    border: 1px solid rgba(31,41,55,0.9);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.15s ease;
+    font-size: 13px;
+    user-select: none;
+    color: var(--text);
+  }
+
+  .tile:hover {
+    background: rgba(30,64,175,0.45);
+    border-color: rgba(129,140,248,0.8);
+  }
+
+  .tile input {
+    margin-right: 8px;
+    width: 16px;
+    height: 16px;
+  }
+
+  .radio-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    grid-gap: 10px;
+    margin-top: 12px;
+  }
+
+  .radio-tile {
+    display: flex;
+    align-items: center;
+    padding: 8px 10px;
+    background: rgba(15,23,42,0.95);
+    border-radius: 999px;
+    border: 1px solid rgba(31,41,55,0.9);
+    cursor: pointer;
+    transition: 0.15s;
+    font-size: 13px;
+  }
+
+  .radio-tile:hover {
+    border-color: rgba(129,140,248,0.9);
+    background: rgba(30,64,175,0.55);
+  }
+
+  .radio-tile input {
+    margin-right: 8px;
+  }
+
+  .search-box {
+    width: 100%;
+    padding: 9px 10px;
+    margin-top: 8px;
+    border-radius: 999px;
+    border: 1px solid rgba(31,41,55,0.9);
+    font-size: 13px;
+    background: rgba(15,23,42,0.9);
+    color: var(--text);
+  }
+
+  .search-box::placeholder {
+    color: rgba(148,163,184,0.8);
+  }
+
+  select {
+    width: 100%;
+    padding: 9px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(31,41,55,0.9);
+    margin-top: 10px;
+    font-size: 13px;
+    background: rgba(15,23,42,0.95);
+    color: var(--text);
+  }
+
+  textarea {
+    width: 100%;
+    font-size: 13px;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(31,41,55,0.9);
+    min-height: 140px;
+    background: rgba(15,23,42,0.95);
+    color: var(--text);
+    margin-top: 8px;
+  }
+
+  textarea::placeholder {
+    color: rgba(148,163,184,0.8);
+  }
+
+  .note {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .error {
+    color: #f97373;
+    font-size: 12px;
+    margin-top: 6px;
+  }
+
+  .hidden { display: none; }
+
+  .wizard-nav {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  .wizard-btn {
+    padding: 10px 16px;
+    border-radius: 999px;
+    border: 1px solid rgba(31,41,55,0.9);
+    background: rgba(15,23,42,0.9);
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--text-muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .wizard-btn.primary {
+    background: var(--primary);
+    color: white;
+    border-color: transparent;
+    font-weight: 600;
+  }
+
+  .wizard-btn.primary:hover {
+    background: var(--primary-hover);
+  }
+
+  .wizard-btn.disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+
+  .submit-btn {
+    width: 100%;
+    padding: 13px;
+    background: var(--primary);
+    border: none;
+    border-radius: 999px;
+    font-size: 15px;
+    cursor: pointer;
+    color: white;
+    font-weight: 700;
+    margin-top: 10px;
+  }
+
+  .submit-btn:hover {
+    background: var(--primary-hover);
+  }
+
+  @media (max-width: 900px) {
+    .shell {
+      flex-direction: column;
+    }
+    .sidebar {
+      width: 100%;
+      border-right: none;
+      border-bottom: 1px solid rgba(31,41,55,0.9);
+      flex-direction: row;
+      align-items: center;
+      gap: 16px;
+    }
+    .sidebar-nav {
+      flex-direction: row;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .sidebar-footer {
+      display: none;
+    }
+  }
+</style>
+</head>
+
+<body>
+<div class="shell">
+  <!-- Sidebar with icons -->
+  <aside class="sidebar">
+    <div class="logo-block">
+      <div class="logo-mark">MB</div>
+      <div class="logo-text">
+        <div class="logo-title">Market Boost</div>
+        <div class="logo-subtitle">Intake Wizard</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sidebar-label">Flow</div>
+      <nav class="sidebar-nav" id="sidebarNav">
+        <div class="nav-item active" data-step="1" onclick="goToStep(1)">
+          <div class="nav-item-icon">🏭</div>
+          <span class="label">Industries</span>
+          <span class="step-number">1</span>
+        </div>
+        <div class="nav-item" data-step="2" onclick="goToStep(2)">
+          <div class="nav-item-icon">🏢</div>
+          <span class="label">Size & Type</span>
+          <span class="step-number">2</span>
+        </div>
+        <div class="nav-item" data-step="3" onclick="goToStep(3)">
+          <div class="nav-item-icon">🌍</div>
+          <span class="label">Geography</span>
+          <span class="step-number">3</span>
+        </div>
+        <div class="nav-item" data-step="4" onclick="goToStep(4)">
+          <div class="nav-item-icon">🎯</div>
+          <span class="label">Targets</span>
+          <span class="step-number">4</span>
+        </div>
+        <div class="nav-item" data-step="5" onclick="goToStep(5)">
+          <div class="nav-item-icon">👤</div>
+          <span class="label">Role Details</span>
+          <span class="step-number">5</span>
+        </div>
+      </nav>
+    </div>
+
+    <div class="sidebar-footer">
+      Designed for <strong>executive search</strong> &amp; <strong>market mapping</strong>.
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="main">
+    <div class="main-header">
+      <div class="main-title-block">
+        <div class="main-title">Market Boost Intake</div>
+        <div class="main-subtitle">Define the market, targets, and role profile in a few guided steps.</div>
+      </div>
+      <div class="wizard-status" id="wizardStatus">Step 1 of 5 • Industries</div>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="progress">
+      <div class="progress-line"></div>
+      <div class="progress-steps">
+        <div class="progress-step" data-step="1">
+          <div class="progress-circle">1</div>
+          <div class="progress-label">Industries</div>
+        </div>
+        <div class="progress-step" data-step="2">
+          <div class="progress-circle">2</div>
+          <div class="progress-label">Size</div>
+        </div>
+        <div class="progress-step" data-step="3">
+          <div class="progress-circle">3</div>
+          <div class="progress-label">Geography</div>
+        </div>
+        <div class="progress-step" data-step="4">
+          <div class="progress-circle">4</div>
+          <div class="progress-label">Targets</div>
+        </div>
+        <div class="progress-step" data-step="5">
+          <div class="progress-circle">5</div>
+          <div class="progress-label">Role</div>
+        </div>
+      </div>
+    </div>
+
+    <form id="criteriaForm" method="POST" action="YOUR_WEBHOOK_URL_HERE">
+      <!-- STEP 1: INDUSTRIES -->
+      <div class="card step active" id="step1">
+        <h2>Industries</h2>
+        <p class="note">Select one or more industries that best match your target market.</p>
+        <input type="text" class="search-box" placeholder="Search industries..." onkeyup="filterIndustries(this.value)">
+        <div id="industryGrid" class="grid grid-industry"></div>
+        <div id="err_industries" class="error hidden">Please select at least one industry.</div>
+      </div>
+
+      <!-- STEP 2: COMPANY SIZE & TYPE -->
+      <div class="card step" id="step2">
+        <h2>Company Size & Type</h2>
+
+        <h3>Employee Count</h3>
+        <div id="empGrid" class="grid grid-5"></div>
+
+        <h3>Revenue Range</h3>
+        <div id="revGrid" class="grid grid-5"></div>
+
+        <h3>Company Type</h3>
+        <p class="note">Choose whether you're targeting public companies, private companies, or both.</p>
+        <div class="radio-group">
+          <label class="radio-tile">
+            <input type="radio" name="company_type" value="public">
+            Public
+          </label>
+          <label class="radio-tile">
+            <input type="radio" name="company_type" value="private">
+            Private
+          </label>
+          <label class="radio-tile">
+            <input type="radio" name="company_type" value="both" checked>
+            Both
+          </label>
+        </div>
+      </div>
+
+      <!-- STEP 3: GEOGRAPHY -->
+      <div class="card step" id="step3">
+        <h2>Geography</h2>
+        <p class="note">Where should these companies be headquartered?</p>
+
+        <select id="geo_type" name="geo_type" onchange="toggleGeography()">
+          <option value="">-- Select Geography --</option>
+          <option value="us">United States</option>
+          <option value="intl">International</option>
+        </select>
+        <div id="err_geo" class="error hidden">Please select a geography type.</div>
+
+        <!-- US STATES -->
+        <div id="usStatesBlock" class="hidden">
+          <h3>States</h3>
+          <input class="search-box" placeholder="Search states..." onkeyup="filterStates(this.value)">
+          <div id="stateGrid" class="grid grid-states"></div>
+        </div>
+
+        <!-- METRO AREAS -->
+        <div id="metroBlock" class="hidden">
+          <h3>Metro Areas</h3>
+          <div id="metroGrid" class="grid grid-3"></div>
+        </div>
+
+        <!-- COUNTRIES -->
+        <div id="intlBlock" class="hidden">
+          <h3>Countries</h3>
+          <input class="search-box" placeholder="Search countries..." onkeyup="filterCountries(this.value)">
+          <div id="countryGrid" class="grid grid-4"></div>
+        </div>
+      </div>
+
+      <!-- STEP 4: TARGET COMPANIES -->
+      <div class="card step" id="step4">
+        <h2>Target Companies</h2>
+        <p class="note">
+          Please input company names as cleanly as possible.<br>
+          Use <strong>one company per line</strong>. We'll automatically clean and deduplicate this list.
+        </p>
+        <textarea id="targetCompanies" name="target_companies" placeholder="Example:
+Snowflake
+HubSpot
+Databricks
+ServiceNow
+"></textarea>
+        <button type="button" class="wizard-btn" style="margin-top:8px;" onclick="cleanTargetCompanies()">
+          ✨ Clean & Deduplicate Now
+        </button>
+        <div id="cleanNote" class="note"></div>
+      </div>
+
+      <!-- STEP 5: ROLE DETAILS -->
+      <div class="card step" id="step5">
+        <h2>Role Details</h2>
+        <p class="note">Select the target role type and seniority level you are hiring for.</p>
+
+        <h3>Role Type</h3>
+        <div id="roleTypeGrid" class="grid grid-4"></div>
+        <div id="err_role_type" class="error hidden">Please select at least one role type.</div>
+
+        <h3 style="margin-top:18px;">Role Level</h3>
+        <div id="roleLevelGrid" class="grid grid-4"></div>
+        <div id="err_role_level" class="error hidden">Please select at least one role level.</div>
+      </div>
+
+      <!-- WIZARD NAV -->
+      <div class="wizard-nav">
+        <button type="button" id="prevBtn" class="wizard-btn" onclick="prevStep()">← Back</button>
+        <button type="button" id="nextBtn" class="wizard-btn primary" onclick="nextStep()">Next →</button>
+      </div>
+
+      <button type="submit" id="submitBtn" class="submit-btn hidden">Submit Market Boost Intake</button>
+    </form>
+  </main>
+</div>
+
+<script>
+/* ============================================
+   STEP / WIZARD LOGIC
+============================================ */
+let currentStep = 1;
+const totalSteps = 5;
+
+function updateWizardStatus() {
+  const status = document.getElementById("wizardStatus");
+  const titles = {
+    1: "Industries",
+    2: "Company Size & Type",
+    3: "Geography",
+    4: "Target Companies",
+    5: "Role Details"
+  };
+  status.textContent = `Step ${currentStep} of ${totalSteps} • ${titles[currentStep]}`;
+}
+
+function updateProgress() {
+  const steps = document.querySelectorAll(".progress-step");
+  steps.forEach(stepEl => {
+    const stepNum = Number(stepEl.getAttribute("data-step"));
+    stepEl.classList.remove("active", "completed");
+    if (stepNum < currentStep) stepEl.classList.add("completed");
+    if (stepNum === currentStep) stepEl.classList.add("active");
+  });
+}
+
+function updateSidebar() {
+  const navItems = document.querySelectorAll(".nav-item");
+  navItems.forEach(item => {
+    const stepNum = Number(item.getAttribute("data-step"));
+    item.classList.toggle("active", stepNum === currentStep);
+  });
+}
+
+function showStep(step) {
+  currentStep = step;
+  for (let i = 1; i <= totalSteps; i++) {
+    const el = document.getElementById(`step${i}`);
+    el.classList.toggle("active", i === currentStep);
+  }
+
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const submitBtn = document.getElementById("submitBtn");
+
+  if (currentStep === 1) {
+    prevBtn.classList.add("disabled");
+    prevBtn.disabled = true;
+  } else {
+    prevBtn.classList.remove("disabled");
+    prevBtn.disabled = false;
+  }
+
+  if (currentStep === totalSteps) {
+    nextBtn.classList.add("hidden");
+    submitBtn.classList.remove("hidden");
+  } else {
+    nextBtn.classList.remove("hidden");
+    submitBtn.classList.add("hidden");
+  }
+
+  updateWizardStatus();
+  updateProgress();
+  updateSidebar();
+}
+
+function validateStep(step) {
+  let valid = true;
+
+  if (step === 1) {
+    const checked = document.querySelectorAll("input[name='industries']:checked");
+    if (!checked.length) {
+      document.getElementById("err_industries").classList.remove("hidden");
+      valid = false;
+    } else {
+      document.getElementById("err_industries").classList.add("hidden");
+    }
+  }
+
+  if (step === 3) {
+    const geoVal = document.getElementById("geo_type").value;
+    if (!geoVal) {
+      document.getElementById("err_geo").classList.remove("hidden");
+      valid = false;
+    } else {
+      document.getElementById("err_geo").classList.add("hidden");
+    }
+  }
+
+  if (step === 5) {
+    const rt = document.querySelectorAll("input[name='role_type']:checked");
+    const rl = document.querySelectorAll("input[name='role_level']:checked");
+
+    if (!rt.length) {
+      document.getElementById("err_role_type").classList.remove("hidden");
+      valid = false;
+    } else {
+      document.getElementById("err_role_type").classList.add("hidden");
+    }
+
+    if (!rl.length) {
+      document.getElementById("err_role_level").classList.remove("hidden");
+      valid = false;
+    } else {
+      document.getElementById("err_role_level").classList.add("hidden");
+    }
+  }
+
+  return valid;
+}
+
+function nextStep() {
+  if (!validateStep(currentStep)) return;
+  if (currentStep < totalSteps) showStep(currentStep + 1);
+}
+
+function prevStep() {
+  if (currentStep > 1) showStep(currentStep - 1);
+}
+
+/* Fully clickable sidebar navigation (no validation gating) */
+function goToStep(step) {
+  currentStep = step;
+  showStep(step);
+}
+
+/* ============================================
+   DATA LISTS
+============================================ */
+const industries = [
+  "3D Printing","AI/Machine Learning","Accounting Services","AdTech","Advanced Manufacturing",
+  "Advertising & Marketing","Aerospace","AgTech","Agriculture","Artificial Intelligence & Machine Learning",
+  "AudioTech","Augmented Reality","Automotive","Autonomous cars","B2B Payments","Beauty","Big Data",
+  "Biotechnology","Business/Productivity Software","Cannabis","Car-Sharing","Chemicals","CleanTech",
+  "Climate Tech","CloudTech & DevOps","Collaboration/Communication","Commercial Banking",
+  "Commercial Real Estate","Construction Technology","Consumer Products","Cryptocurrency/Blockchain",
+  "Cybersecurity","Data Analytics","Digital Health","Digital Marketing","E-Commerce","EdTech",
+  "Education Technology","Educational Services","Energy Services","Enterprise Software","Ephemeral Content",
+  "Esports","FemTech","FinTech","Financial Technology (Fintech)","Food & Beverage","FoodTech","Gaming",
+  "HR Tech","HealthTech","Healthcare Facilities","Healthcare IT","IT Consulting & Other Services",
+  "Impact Investing","Industrial Manufacturing","Industrials","Infrastructure","InsurTech",
+  "Insurance Technology","Internet of Things","LOHAS & Wellness","Legal Tech","Lending","Life Sciences",
+  "Life/Health Insurance","Logistics","Machinery","Manufacturing","Marketing Tech","Marketing Technology",
+  "Media & Entertainment","Medical Devices","Micro-Mobility","Mobile","Mobile Commerce","Mobility Tech",
+  "Mortgage Tech","Music","Nanotechnology","Oil & Gas","Oncology","Other","P&C Insurance","Payments",
+  "Personal Care Products","Pet Technology","Pharmaceuticals","Plastics & Rubber","Publishing",
+  "Real Estate Technology","Renewable Energy","Residential Real Estate","Restaurant Technology",
+  "Restaurants","Ridesharing","Robotics and Drones","SaaS","Semiconductors","Space Technology",
+  "Specialty Retail","Supply Chain Tech","Supply Chain Technology","TMT","Telecommunications Equipment",
+  "Therapeutics","Transportation/Logistics","Virtual Reality","Wearables & Quantified Self"
+];
+
+const empRanges = ["1-10","11-50","51-200","201-500","501-1000","1001-5000","5001-10000","10000+"];
+const revRanges = ["0-1M","1-5M","5-10M","10-25M","25-50M","50-100M","100-250M","250-500M","500M-1B","1B+"];
+const metros = [
+  "San Francisco Bay Area","New York City","Los Angeles","Chicago",
+  "Seattle","Austin","Boston","Miami","Denver","Atlanta",
+  "Dallas–Fort Worth","Washington DC","San Diego","Philadelphia","Houston"
+];
+
+const roleTypes = [
+  "Executive",
+  "Finance",
+  "Sales",
+  "Marketing",
+  "Customer Success",
+  "Technology / Engineering",
+  "Product",
+  "HR"
+];
+
+const roleLevels = [
+  "C-level",
+  "VP",
+  "Director",
+  "Manager"
+];
+
+function tile(name, field) {
+  return `
+    <label class="tile">
+      <input type="checkbox" name="${field}" value="${name}">
+      ${name}
+    </label>`;
+}
+
+/* ============================================
+   RENDER STATIC GRIDS
+============================================ */
+function renderIndustries(list) {
+  document.getElementById("industryGrid").innerHTML =
+    list.map(i => tile(i, "industries")).join("");
+}
+renderIndustries(industries);
+
+function filterIndustries(text) {
+  const t = text.toLowerCase();
+  renderIndustries(
+    industries.filter(i => i.toLowerCase().includes(t))
+  );
+}
+
+document.getElementById("empGrid").innerHTML =
+  empRanges.map(e => tile(e, "employee_count")).join("");
+
+document.getElementById("revGrid").innerHTML =
+  revRanges.map(r => tile(r, "revenue_range")).join("");
+
+document.getElementById("metroGrid").innerHTML =
+  metros.map(m => tile(m, "metro")).join("");
+
+document.getElementById("roleTypeGrid").innerHTML =
+  roleTypes.map(r => tile(r, "role_type")).join("");
+
+document.getElementById("roleLevelGrid").innerHTML =
+  roleLevels.map(r => tile(r, "role_level")).join("");
+
+/* ============================================
+   GEOGRAPHY: STATES & COUNTRIES VIA API
+============================================ */
+let statesData = [];
+let countriesData = [];
+
+function toggleGeography() {
+  const val = document.getElementById("geo_type").value;
+
+  document.getElementById("usStatesBlock").classList.toggle("hidden", val !== "us");
+  document.getElementById("metroBlock").classList.toggle("hidden", val !== "us");
+  document.getElementById("intlBlock").classList.toggle("hidden", val !== "intl");
+
+  if (val === "us") loadStates();
+  if (val === "intl") loadCountries();
+}
+
+/* Load US states (CountriesNow API) */
+async function loadStates() {
+  if (statesData.length) return;
+  try {
+    const res = await fetch("https://countriesnow.space/api/v0.1/countries/states", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ country: "United States" })
+    });
+    const json = await res.json();
+    statesData = (json.data?.states || []).map(s => s.name).sort();
+    renderStates(statesData);
+  } catch (e) {
+    console.error("Error loading states", e);
+    statesData = [];
+    document.getElementById("stateGrid").innerHTML = "<div class='note'>Unable to load states.</div>";
+  }
+}
+
+function renderStates(list) {
+  document.getElementById("stateGrid").innerHTML =
+    list.map(s => tile(s, "us_states")).join("");
+}
+
+function filterStates(text) {
+  const t = text.toLowerCase();
+  renderStates(
+    statesData.filter(s => s.toLowerCase().includes(t))
+  );
+}
+
+/* Load countries list */
+async function loadCountries() {
+  if (countriesData.length) return;
+  try {
+    const res = await fetch("https://countriesnow.space/api/v0.1/countries");
+    const json = await res.json();
+    const data = json.data || [];
+    countriesData = data
+      .map(c => c.country || c.name || "")
+      .filter(Boolean)
+      .sort();
+    renderCountries(countriesData);
+  } catch (e) {
+    console.error("Error loading countries", e);
+    countriesData = [];
+    document.getElementById("countryGrid").innerHTML = "<div class='note'>Unable to load countries.</div>";
+  }
+}
+
+function renderCountries(list) {
+  document.getElementById("countryGrid").innerHTML =
+    list.map(c => tile(c, "countries")).join("");
+}
+
+function filterCountries(text) {
+  const t = text.toLowerCase();
+  renderCountries(
+    countriesData.filter(c => c.toLowerCase().includes(t))
+  );
+}
+
+/* ============================================
+   SMART CLEANING: TARGET COMPANIES
+============================================ */
+function toTitleCaseSmart(name) {
+  const lowerWords = ["and","or","of","the","for","in","on","at"];
+  const acronyms = ["SaaS","HR","AI","ML","CRM","ERP","AWS","IBM","HP","SAP"];
+
+  return name
+    .split(/\s+/)
+    .map((word, idx) => {
+      if (!word) return "";
+      const raw = word;
+
+      if (acronyms.includes(raw.toUpperCase())) return raw.toUpperCase();
+      if (/^[A-Z0-9]{2,}$/.test(raw)) return raw; // keep all-caps words
+      const lower = raw.toLowerCase();
+      if (idx > 0 && lowerWords.includes(lower)) return lower;
+      return lower.charAt(0).toUpperCase() + lower.slice(1);
+    })
+    .join(" ");
+}
+
+function cleanTargetCompanies() {
+  const textarea = document.getElementById("targetCompanies");
+  const raw = textarea.value || "";
+  const lines = raw.split(/\r?\n/);
+
+  const cleanedSet = new Map(); // normalized -> display
+
+  for (let line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    const normalized = trimmed.toLowerCase().replace(/[^a-z0-9]+/gi, " ").trim();
+    if (!normalized) continue;
+    if (cleanedSet.has(normalized)) continue; // dedupe
+
+    const pretty = toTitleCaseSmart(trimmed);
+    cleanedSet.set(normalized, pretty);
+  }
+
+  const cleanedLines = Array.from(cleanedSet.values());
+  textarea.value = cleanedLines.join("\n");
+
+  const note = document.getElementById("cleanNote");
+  note.textContent = cleanedLines.length
+    ? `Cleaned and deduplicated. ${cleanedLines.length} unique compan${
+        cleanedLines.length === 1 ? "y" : "ies"
+      } detected.`
+    : "No valid companies found after cleaning.";
+}
+
+document.getElementById("targetCompanies").addEventListener("blur", cleanTargetCompanies);
+
+/* ============================================
+   FORM SUBMIT VALIDATION (FINAL GUARD)
+============================================ */
+document.getElementById("criteriaForm").addEventListener("submit", function(e) {
+  // run cleaning one more time before submit
+  cleanTargetCompanies();
+
+  let valid = true;
+
+  if (!document.querySelector("input[name='industries']:checked")) {
+    document.getElementById("err_industries").classList.remove("hidden");
+    valid = false;
+    showStep(1);
+  } else {
+    document.getElementById("err_industries").classList.add("hidden");
+  }
+
+  if (!document.getElementById("geo_type").value) {
+    document.getElementById("err_geo").classList.remove("hidden");
+    if (valid) showStep(3);
+    valid = false;
+  } else {
+    document.getElementById("err_geo").classList.add("hidden");
+  }
+
+  if (!document.querySelectorAll("input[name='role_type']:checked").length ||
+      !document.querySelectorAll("input[name='role_level']:checked").length) {
+    showStep(5);
+    valid = false;
+  }
+
+  if (!valid) e.preventDefault();
+});
+
+/* Init */
+showStep(1);
+</script>
+
+</body>
+</html>
