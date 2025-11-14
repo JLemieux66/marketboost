@@ -306,6 +306,9 @@
     margin-top: 16px;
   }
 
+  /* two-column helper for min/max inputs */
+  .grid-2 { grid-template-columns: repeat(2, minmax(150px, 1fr)); }
+
   .grid-industry { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
   .grid-5       { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
   .grid-4       { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
@@ -583,7 +586,16 @@
       </div>
     </div>
 
-    <form id="criteriaForm" method="POST" action="https://jlemieux.app.n8n.cloud/webhook-test/d9490ea6-73af-4938-94ed-360bf8b6e3b3">
+    <form id="criteriaForm" method="POST" action="YOUR_WEBHOOK_URL_HERE">
+      <!-- INTAKE DETAILS: name + contact emails -->
+      <div class="card">
+        <h2>Intake Details</h2>
+        <p class="note">Provide a name for this intake and one or more contact emails (comma or newline separated).</p>
+  <input type="text" id="market_boost_name" name="market_boost_name" required placeholder="Market Boost Name (e.g. Q4 Sales Hiring)" style="width:100%; padding:9px 10px; border-radius:8px; border:1px solid rgba(31,41,55,0.9); background:rgba(15,23,42,0.95); color:var(--text); margin-top:8px;">
+  <div id="err_name" class="error hidden">Please provide a name for this intake.</div>
+  <textarea id="contact_emails" name="contact_emails" placeholder="Contact emails, separated by commas or new lines" style="width:100%; margin-top:10px; padding:10px; border-radius:8px; border:1px solid rgba(31,41,55,0.9); background:rgba(15,23,42,0.95); color:var(--text); min-height:70px;"></textarea>
+  <div id="err_emails" class="error hidden">Please provide at least one valid contact email.</div>
+      </div>
       <!-- STEP 1: INDUSTRIES -->
       <div class="card step active" id="step1">
         <h2>Industries</h2>
@@ -598,10 +610,30 @@
         <h2>Company Size & Type</h2>
 
         <h3>Employee Count</h3>
-        <div id="empGrid" class="grid grid-5"></div>
+        <p class="note">Specify minimum and maximum employee counts (leave blank to skip).</p>
+        <div class="grid grid-2" style="margin-top:8px;">
+          <label class="tile" style="align-items:center; cursor:default;">
+            Min
+            <input type="number" name="employee_min" id="employee_min" placeholder="e.g. 10" min="0" style="margin-left:10px; width:120px;">
+          </label>
+          <label class="tile" style="align-items:center; cursor:default;">
+            Max
+            <input type="number" name="employee_max" id="employee_max" placeholder="e.g. 1000" min="0" style="margin-left:10px; width:120px;">
+          </label>
+        </div>
 
-        <h3>Revenue Range</h3>
-        <div id="revGrid" class="grid grid-5"></div>
+        <h3 style="margin-top:14px;">Revenue Range (USD)</h3>
+        <p class="note">Enter minimum and maximum annual revenue in USD (numbers only).</p>
+        <div class="grid grid-2" style="margin-top:8px;">
+          <label class="tile" style="align-items:center; cursor:default;">
+            Min
+            <input type="number" name="revenue_min" id="revenue_min" placeholder="e.g. 1000000" min="0" style="margin-left:10px; width:140px;">
+          </label>
+          <label class="tile" style="align-items:center; cursor:default;">
+            Max
+            <input type="number" name="revenue_max" id="revenue_max" placeholder="e.g. 100000000" min="0" style="margin-left:10px; width:140px;">
+          </label>
+        </div>
 
         <h3>Company Type</h3>
         <p class="note">Choose whether you're targeting public companies, private companies, or both.</p>
@@ -903,11 +935,17 @@ function filterIndustries(text) {
   );
 }
 
-document.getElementById("empGrid").innerHTML =
-  empRanges.map(e => tile(e, "employee_count")).join("");
+// The employee/revenue grids were replaced with min/max numeric inputs.
+// Guard the old DOM writes in case other templates still reference them.
+if (document.getElementById("empGrid")) {
+  document.getElementById("empGrid").innerHTML =
+    empRanges.map(e => tile(e, "employee_count")).join("");
+}
 
-document.getElementById("revGrid").innerHTML =
-  revRanges.map(r => tile(r, "revenue_range")).join("");
+if (document.getElementById("revGrid")) {
+  document.getElementById("revGrid").innerHTML =
+    revRanges.map(r => tile(r, "revenue_range")).join("");
+}
 
 document.getElementById("metroGrid").innerHTML =
   metros.map(m => tile(m, "metro")).join("");
@@ -1051,6 +1089,27 @@ function cleanTargetCompanies() {
 document.getElementById("targetCompanies").addEventListener("blur", cleanTargetCompanies);
 
 /* ============================================
+   EMAIL CLEANING & VALIDATION
+============================================ */
+function parseAndValidateEmails(raw) {
+  if (!raw) return { valid: false, emails: [] };
+  const parts = raw.split(/[\n,;]+/).map(s => s.trim()).filter(Boolean);
+  const seen = new Set();
+  const emails = [];
+  const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  for (let p of parts) {
+    const normalized = p.toLowerCase();
+    if (seen.has(normalized)) continue;
+    seen.add(normalized);
+    emails.push(p);
+  }
+
+  const invalid = emails.filter(e => !emailRe.test(e));
+  return { valid: invalid.length === 0 && emails.length > 0, emails, invalid };
+}
+
+/* ============================================
    FORM SUBMIT VALIDATION (FINAL GUARD)
 ============================================ */
 document.getElementById("criteriaForm").addEventListener("submit", function(e) {
@@ -1079,6 +1138,81 @@ document.getElementById("criteriaForm").addEventListener("submit", function(e) {
       !document.querySelectorAll("input[name='role_level']:checked").length) {
     showStep(5);
     valid = false;
+  }
+
+  // Validate min/max pairs for employee and revenue if both provided
+  const empMinEl = document.getElementById('employee_min');
+  const empMaxEl = document.getElementById('employee_max');
+  const revMinEl = document.getElementById('revenue_min');
+  const revMaxEl = document.getElementById('revenue_max');
+
+  if (empMinEl && empMaxEl) {
+    const min = empMinEl.value ? Number(empMinEl.value) : null;
+    const max = empMaxEl.value ? Number(empMaxEl.value) : null;
+    if (min !== null && max !== null && min > max) {
+      valid = false;
+      showStep(2);
+      // show inline error
+      let empErr = document.getElementById('err_emp_range');
+      if (!empErr) {
+        empErr = document.createElement('div');
+        empErr.id = 'err_emp_range';
+        empErr.className = 'error';
+        empErr.textContent = 'Employee minimum cannot be greater than maximum.';
+        empMaxEl.parentNode.parentNode.appendChild(empErr);
+      } else {
+        empErr.classList.remove('hidden');
+      }
+    }
+  }
+
+  if (revMinEl && revMaxEl) {
+    const minR = revMinEl.value ? Number(revMinEl.value) : null;
+    const maxR = revMaxEl.value ? Number(revMaxEl.value) : null;
+    if (minR !== null && maxR !== null && minR > maxR) {
+      valid = false;
+      showStep(2);
+      let revErr = document.getElementById('err_rev_range');
+      if (!revErr) {
+        revErr = document.createElement('div');
+        revErr.id = 'err_rev_range';
+        revErr.className = 'error';
+        revErr.textContent = 'Revenue minimum cannot be greater than maximum.';
+        revMaxEl.parentNode.parentNode.appendChild(revErr);
+      } else {
+        revErr.classList.remove('hidden');
+      }
+    }
+  }
+
+  // Validate contact emails
+  const rawEmails = document.getElementById('contact_emails')?.value || '';
+  const parsed = parseAndValidateEmails(rawEmails);
+  const errEmailsEl = document.getElementById('err_emails');
+  const nameEl = document.getElementById('market_boost_name');
+  const errNameEl = document.getElementById('err_name');
+
+  // Validate name required
+  if (nameEl) {
+    if (!nameEl.value || !nameEl.value.trim()) {
+      valid = false;
+      if (errNameEl) errNameEl.classList.remove('hidden');
+      showStep(1);
+    } else if (errNameEl) {
+      errNameEl.classList.add('hidden');
+    }
+  }
+  if (!parsed.valid) {
+    valid = false;
+    showStep(1); // bring user to the top where Intake Details live
+    if (errEmailsEl) {
+      errEmailsEl.textContent = parsed.invalid && parsed.invalid.length
+        ? `Invalid email(s): ${parsed.invalid.join(', ')}`
+        : 'Please provide at least one valid contact email.';
+      errEmailsEl.classList.remove('hidden');
+    }
+  } else if (errEmailsEl) {
+    errEmailsEl.classList.add('hidden');
   }
 
   if (!valid) e.preventDefault();
